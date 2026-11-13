@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mykonos Power | Enterprise Dashboard</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- RemixIcon -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        (function () {
+            const user = JSON.parse(localStorage.getItem('mykonos_current_user'));
+            if (!user || user.role !== 'admin') {
+                window.location.href = 'portal.html';
+            }
+        })();
+    </script>
+</head>
+
+<body>
+    <nav class="sidebar">
+        <div class="logo">
+            <i class="ri-flashlight-fill" style="color: var(--accent-color);"></i> Mykonos Power
+        </div>
+        <div class="nav-links">
+            <a href="index.html" class="active"><i class="ri-dashboard-3-line"></i> Dashboard</a>
+            <a href="generate.html"><i class="ri-qr-code-line"></i> Generate Token</a>
+            <a href="history.html"><i class="ri-history-line"></i> Transaction History</a>
+            <a href="portal.html"><i class="ri-user-smile-line"></i> Customer Portal</a>
+            <a href="settings.html"><i class="ri-settings-4-line"></i> Settings</a>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <header>
+            <div>
+                <h1>Enterprise Control Center</h1>
+                <div style="display: flex; align-items: center; gap: 15px; margin-top: 5px;">
+                    <span class="pulse-indicator"></span>
+                    <p style="color: var(--success-color); font-size: 0.85rem; font-weight: 600; letter-spacing: 1px;">
+                        SYSTEM ONLINE: GATEWAY ACTIVE</p>
+                </div>
+            </div>
+            <div style="display: flex; align-items: center;">
+                <div class="view-switcher">
+                    <a href="index.html" class="view-btn active">Admin</a>
+                    <a href="portal.html" class="view-btn">Customer</a>
+                </div>
+                <div class="user-profile" style="cursor: pointer;" onclick="if(confirm('Logout?')) Auth.logout()">
+                    <i class="ri-user-settings-line" style="color: var(--accent-color);"></i>
+                    <span id="header-username">System Admin</span>
+                    <i class="ri-logout-box-r-line" style="margin-left: 10px; font-size: 0.9rem; opacity: 0.7;"></i>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dynamic Metrics -->
+        <div class="dashboard-grid">
+            <div class="card stat-card" style="border-bottom: 2px solid var(--accent-color);">
+                <h3><i class="ri-funds-box-line"></i> Total Revenue</h3>
+                <div class="value" id="total-revenue">KES 0</div>
+                <div class="mini-stat"><i class="ri-line-chart-line"></i> +KES 4,200 since 00:00</div>
+            </div>
+            <div class="card stat-card" style="border-bottom: 2px solid var(--success-color);">
+                <h3><i class="ri-flashlight-line"></i> Energy Credits Sold</h3>
+                <div class="value" id="tokens-issued">0</div>
+                <div class="mini-stat"><i class="ri-timer-flash-line"></i> Avg: 12 tokens/hr</div>
+            </div>
+            <div class="card stat-card" style="border-bottom: 2px solid #ffaa00;">
+                <h3><i class="ri-broadcast-line"></i> Network Uptime</h3>
+                <div class="value">99.9%</div>
+                <div class="health-bar">
+                    <div class="health-fill" style="width: 99.9%; background: var(--success-color);"></div>
+                </div>
+            </div>
+            <div class="card stat-card" style="border-bottom: 2px solid var(--neon-purple);">
+                <h3><i class="ri-group-line"></i> Global Accounts</h3>
+                <div class="value" id="total-customers">0</div>
+                <div class="mini-stat"><i class="ri-user-add-line"></i> Network expanding</div>
+            </div>
+        </div>
+
+        <!-- 3-Column Intelligence Row -->
+        <div class="dash-layout-grid">
+            <!-- Panel 1: Revenue Trends -->
+            <div class="card" style="flex: 1;">
+                <h3 style="margin-bottom: 20px;"><i class="ri-funds-line"></i> Financial Flow</h3>
+                <div style="height: 250px;"><canvas id="revenueChart"></canvas></div>
+            </div>
+
+            <!-- Panel 2: System Health -->
+            <div class="card" style="flex: 1;">
+                <h3 style="margin-bottom: 20px;"><i class="ri-hard-drive-2-line"></i> Resource Health</h3>
+                <div style="height: 250px;"><canvas id="meterChart"></canvas></div>
+            </div>
+
+            <!-- Panel 3: Live Pulse (Transactions) -->
+            <div class="card" style="flex: 1; display: flex; flex-direction: column;">
+                <h3 style="margin-bottom: 20px;"><i class="ri-history-line"></i> Live Transaction Aura</h3>
+                <div id="recent-activity-list" style="overflow-y: auto; flex: 1; max-height: 250px;">
+                    <p style="opacity: 0.3; font-size: 0.8rem;">Listening for network signals...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Regional Sector Cards (Mock for realism) -->
+        <div class="dashboard-grid" style="grid-template-columns: repeat(3, 1fr);">
+            <div class="card" style="padding: 20px; text-align: center; background: rgba(255,255,255,0.02);">
+                <span style="font-size: 0.7rem; opacity: 0.5;">SECTOR ALPHA (CBD)</span>
+                <div style="font-size: 1.2rem; font-weight: 700; margin-top: 5px;">Active: 942</div>
+            </div>
+            <div class="card" style="padding: 20px; text-align: center; background: rgba(255,255,255,0.02);">
+                <span style="font-size: 0.7rem; opacity: 0.5;">SECTOR BETA (WEST)</span>
+                <div style="font-size: 1.2rem; font-weight: 700; margin-top: 5px;">Active: 312</div>
+            </div>
+            <div class="card" style="padding: 20px; text-align: center; background: rgba(255,255,255,0.02);">
+                <span style="font-size: 0.7rem; opacity: 0.5;">SECTOR GAMMA (IND)</span>
+                <div style="font-size: 1.2rem; font-weight: 700; margin-top: 5px;">Active: 18</div>
+            </div>
+        </div>
+    </main>
+
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const ctxRev = document.getElementById('revenueChart').getContext('2d');
+            new Chart(ctxRev, {
+                type: 'line',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        data: [12000, 19000, 15000, 25000, 22000, 30000, 28000],
+                        borderColor: '#3500d3',
+                        backgroundColor: 'rgba(53, 0, 211, 0.1)',
+                        fill: true,
+                        tension: 0.5,
+                        pointRadius: 4,
+                        pointBackgroundColor: '#fff',
+                        borderWidth: 3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { color: 'rgba(255,255,255,0.3)' } },
+                        y: { display: false }
+                    }
+                }
+            });
+
+            const ctxMeter = document.getElementById('meterChart').getContext('2d');
+            new Chart(ctxMeter, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Gateway A', 'Gateway B', 'Failed'],
+                    datasets: [{
+                        data: [85, 12, 3],
+                        backgroundColor: ['#3500d3', '#00fa9a', '#ff4500'],
+                        borderWidth: 0,
+                        hoverOffset: 10
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '80%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { color: 'rgba(255,255,255,0.5)', boxWidth: 10, usePointStyle: true }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

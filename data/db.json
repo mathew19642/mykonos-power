@@ -1,0 +1,149 @@
+{
+    "users": [
+        {
+            "id": 1776760467464,
+            "name": "System Admin",
+            "meter": "admin_boss",
+            "role": "admin",
+            "password": "admin"
+        },
+        {
+            "id": 1776760785729,
+            "name": "emmanuel Mugendi",
+            "email": "emmanuelmwaniki09@gmail.com",
+            "meter": "47421423181",
+            "password": "emmanuel123",
+            "role": "customer",
+            "walletBalance": 100,
+            "registrationDate": "2026-04-21T08:39:45.729Z"
+        },
+        {
+            "id": 1776760842856,
+            "name": "scott lawi",
+            "email": "Luhscott035@gmail.com",
+            "meter": "94796001479",
+            "password": "scott123",
+            "role": "customer",
+            "walletBalance": 600,
+            "registrationDate": "2026-04-21T08:40:42.856Z"
+        },
+        {
+            "id": 1777010224557,
+            "name": "Matt Doss",
+            "email": "mathewgitonga761@gmail.com",
+            "meter": "21835661779",
+            "password": "mattdoss123",
+            "role": "customer",
+            "walletBalance": 260,
+            "registrationDate": "2026-04-24T05:57:04.557Z"
+        },
+        {
+            "id": 1777012686626,
+            "name": "john",
+            "email": "mathewgitonga761@gmail.com",
+            "meter": "39877341934",
+            "password": "john123",
+            "role": "customer",
+            "walletBalance": 0,
+            "registrationDate": "2026-04-24T06:38:06.626Z"
+        }
+    ],
+    "transactions": [
+        {
+            "id": "TXN-JLTJRQY2A",
+            "date": "2026-04-21T08:41:20.105Z",
+            "meter": "47421423181",
+            "token": "62945 61435 48209 67982",
+            "amount": 100,
+            "units": "3.04",
+            "base": 76,
+            "vat": 16,
+            "fuel": 8,
+            "customerName": "emmanuel Mugendi",
+            "notified": {
+                "sms": false,
+                "email": false
+            }
+        },
+        {
+            "id": "TXN-NT5SBSMBX",
+            "date": "2026-04-21T08:42:10.833Z",
+            "meter": "94796001479",
+            "token": "74277 14908 11568 41002",
+            "amount": 200,
+            "units": "6.08",
+            "base": 152,
+            "vat": 32,
+            "fuel": 16,
+            "customerName": "scott lawi",
+            "notified": {
+                "sms": false,
+                "email": false
+            }
+        },
+        {
+            "id": "TXN-VU4PQDMXB",
+            "date": "2026-04-21T11:56:42.605Z",
+            "meter": "47421423181",
+            "token": "23048 50008 30385 87036",
+            "amount": 100,
+            "units": "3.04",
+            "base": 76,
+            "vat": 16,
+            "fuel": 8,
+            "customerName": "emmanuel Mugendi",
+            "notified": {
+                "sms": true,
+                "email": true
+            }
+        },
+        {
+            "id": "TXN-LM82LAA04",
+            "date": "2026-04-24T05:57:49.819Z",
+            "meter": "21835661779",
+            "token": "92895 19680 42136 95563",
+            "amount": 200,
+            "units": "6.08",
+            "base": 152,
+            "vat": 32,
+            "fuel": 16,
+            "customerName": "Matt Doss",
+            "notified": {
+                "sms": false,
+                "email": true
+            }
+        },
+        {
+            "id": "TXN-JC2FN96CN",
+            "date": "2026-04-24T06:35:56.288Z",
+            "meter": "47421423181",
+            "token": "24813 42954 94472 61524",
+            "amount": 150,
+            "units": "4.56",
+            "base": 114,
+            "vat": 24,
+            "fuel": 12,
+            "customerName": "emmanuel Mugendi",
+            "notified": {
+                "sms": true,
+                "email": true
+            }
+        },
+        {
+            "id": "TXN-WLJYZJWK6",
+            "date": "2026-04-24T06:39:06.333Z",
+            "meter": "21835661779",
+            "token": "77081 83962 62296 70360",
+            "amount": 140,
+            "units": "4.26",
+            "base": 106.39999999999999,
+            "vat": 22.400000000000002,
+            "fuel": 11.200000000000001,
+            "customerName": "Matt Doss",
+            "notified": {
+                "sms": false,
+                "email": true
+            }
+        }
+    ]
+}

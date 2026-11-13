@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mykonos Power | Settings</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <script>
+        (function () {
+            const user = JSON.parse(localStorage.getItem('mykonos_current_user'));
+            if (!user || user.role !== 'admin') {
+                window.location.href = 'portal.html';
+            }
+        })();
+    </script>
+</head>
+
+<body>
+    <nav class="sidebar">
+        <div class="logo">
+            <i class="ri-flashlight-fill" style="color: var(--accent-color);"></i> Mykonos Power
+        </div>
+        <div class="nav-links">
+            <a href="index.html"><i class="ri-dashboard-3-line"></i> Dashboard</a>
+            <a href="generate.html"><i class="ri-qr-code-line"></i> Generate Token</a>
+            <a href="history.html"><i class="ri-history-line"></i> Transaction History</a>
+            <a href="portal.html"><i class="ri-user-smile-line"></i> Customer Portal</a>
+            <a href="settings.html" class="active"><i class="ri-settings-4-line"></i> Settings</a>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <header>
+            <div>
+                <h1>Settings</h1>
+                <p style="color: rgba(255,255,255,0.6);">Manage your profile and system data</p>
+            </div>
+            <div style="display: flex; align-items: center;">
+                <div class="view-switcher">
+                    <a href="index.html" class="view-btn active">Admin</a>
+                    <a href="portal.html" class="view-btn">Customer</a>
+                </div>
+                <div class="user-profile" style="cursor: pointer;" onclick="if(confirm('Logout?')) Auth.logout()">
+                    <i class="ri-user-3-fill"></i>
+                    <span id="header-username">Admin User</span>
+                    <i class="ri-logout-box-r-line" style="margin-left: 10px; font-size: 0.9rem; opacity: 0.7;"></i>
+                </div>
+            </div>
+        </header>
+
+        <div class="card centered-card" style="margin-bottom: 30px;">
+            <h2
+                style="margin-bottom: 20px; font-size: 1.2rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px;">
+                <i class="ri-user-settings-line"></i> Profile Settings
+            </h2>
+            <form id="settings-form">
+                <div class="form-group">
+                    <label class="form-label">Display Name</label>
+                    <input type="text" id="display-name" class="form-input" placeholder="Enter your name">
+                </div>
+                <button type="submit" class="btn"><i class="ri-save-line"></i> Save Changes</button>
+            </form>
+        </div>
+
+        <div class="card centered-card" style="border: 1px solid var(--error-color); background: rgba(50, 0, 0, 0.3);">
+            <h2
+                style="margin-bottom: 20px; font-size: 1.2rem; color: var(--error-color); border-bottom: 1px solid rgba(255,69,0,0.3); padding-bottom: 15px;">
+                <i class="ri-alert-line"></i> Danger Zone
+            </h2>
+            <p style="margin-bottom: 20px; color: rgba(255,255,255,0.8);">
+                Resetting system data will clear all transaction history and restore default mock data. This action
+                cannot be undone.
+            </p>
+            <button id="reset-data-btn" class="btn btn-danger"><i class="ri-delete-bin-line"></i> Reset System
+                Data</button>
+        </div>
+    </main>
+
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/app.js"></script>
+    <script>
+        // Settings specific logic
+        document.addEventListener('DOMContentLoaded', () => {
+            // Load saved name
+            const savedName = localStorage.getItem('username') || 'Admin User';
+            document.getElementById('display-name').value = savedName;
+
+            // Save settings
+            document.getElementById('settings-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const newName = document.getElementById('display-name').value;
+                if (newName.trim()) {
+                    localStorage.setItem('username', newName);
+                    // Update header immediately
+                    const headerName = document.getElementById('header-username');
+                    if (headerName) headerName.textContent = newName;
+
+                    alert('Settings saved successfully!');
+                }
+            });
+
+            // Reset Data
+            document.getElementById('reset-data-btn').addEventListener('click', () => {
+                if (confirm('Are you sure you want to delete all transaction history?')) {
+                    localStorage.removeItem('transactions');
+                    localStorage.removeItem('username');
+                    alert('System data reset. Reloading...');
+                    window.location.reload();
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

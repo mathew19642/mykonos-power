@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mykonos Power | Login</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+</head>
+
+<body
+    style="display: flex; align-items: center; justify-content: center; height: 100vh; background: radial-gradient(circle at center, #0c0032 0%, #05001a 100%);">
+    <div class="card centered-card" style="max-width: 450px; padding: 40px;">
+        <div class="logo" style="justify-content: center; margin-bottom: 30px;">
+            <i class="ri-flashlight-fill" style="color: var(--accent-color);"></i> Mykonos Power
+        </div>
+        <h2 id="login-title" style="text-align: center; margin-bottom: 30px;">Login</h2>
+        <form id="login-form">
+            <div class="form-group">
+                <label id="meter-label" class="form-label">Meter Number</label>
+                <input type="text" id="login-meter" class="form-input" placeholder="Credential" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Password</label>
+                <input type="password" id="login-password" class="form-input" placeholder="Your password" required>
+            </div>
+            <button type="submit" class="btn" style="margin-top: 20px;">Login to Portal</button>
+        </form>
+        <p style="text-align: center; margin-top: 25px; font-size: 0.9rem; color: rgba(255,255,255,0.6);">
+            New customer? <a href="register.html"
+                style="color: var(--accent-color); text-decoration: none; font-weight: 600;">Register here</a>
+        </p>
+        <div style="margin-top: 20px; text-align: center;">
+            <a href="login.html?role=admin"
+                style="font-size: 0.8rem; color: rgba(255,255,255,0.4); text-decoration: none;"><i
+                    class="ri-admin-line"></i> Admin Access</a>
+        </div>
+    </div>
+
+    <script src="assets/js/auth.js"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const role = urlParams.get('role');
+        const title = document.getElementById('login-title');
+        const label = document.getElementById('meter-label');
+        const input = document.getElementById('login-meter');
+
+        if (role === 'admin') {
+            title.textContent = 'Admin Login';
+            label.textContent = 'Admin Username';
+            input.placeholder = 'e.g. admin_boss';
+        } else {
+            title.textContent = 'Customer Login';
+            label.textContent = 'Full Name';
+            input.placeholder = 'Enter your registered full name';
+        }
+
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const meter = document.getElementById('login-meter').value;
+            const password = document.getElementById('login-password').value;
+
+            const btn = e.target.querySelector('button');
+            btn.innerHTML = 'Authenticating...';
+            btn.disabled = true;
+
+            const result = await Auth.login(meter, password);
+            if (result.success) {
+                if (Auth.isAdmin()) {
+                    window.location.href = 'index.html';
+                } else {
+                    if (role === 'admin') {
+                        alert('ACCESS DENIED: Administrative Privileges Required.');
+                        Auth.logout();
+                        return;
+                    }
+                    window.location.href = 'portal.html';
+                }
+            } else {
+                if (result.error === 'NETWORK_ERROR') {
+                    alert('SYSTEM ERROR: Could not reach the Mykonos Server. Please ensure run.bat is running and port 3000 is open.');
+                } else {
+                    alert('Invalid credentials. Please check your username and password.');
+                }
+                btn.innerHTML = 'Login to Portal';
+                btn.disabled = false;
+            }
+        });
+    </script>
+</body>
+
+</html>

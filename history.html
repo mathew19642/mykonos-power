@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mykonos Power | History</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <script>
+        (function () {
+            const user = JSON.parse(localStorage.getItem('mykonos_current_user'));
+            if (!user || user.role !== 'admin') {
+                window.location.href = 'portal.html';
+            }
+        })();
+    </script>
+</head>
+
+<body>
+    <nav class="sidebar">
+        <div class="logo">
+            <i class="ri-flashlight-fill" style="color: var(--accent-color);"></i> Mykonos Power
+        </div>
+        <div class="nav-links">
+            <a href="index.html"><i class="ri-dashboard-3-line"></i> Dashboard</a>
+            <a href="generate.html"><i class="ri-qr-code-line"></i> Generate Token</a>
+            <a href="history.html" class="active"><i class="ri-history-line"></i> Transaction History</a>
+            <a href="portal.html"><i class="ri-user-smile-line"></i> Customer Portal</a>
+            <a href="settings.html"><i class="ri-settings-4-line"></i> Settings</a>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <header>
+            <div>
+                <h1>Transaction History</h1>
+                <p style="color: rgba(255,255,255,0.6);">View and manage past generated tokens</p>
+            </div>
+            <div style="display: flex; align-items: center;">
+                <div class="view-switcher">
+                    <a href="index.html" class="view-btn active">Admin</a>
+                    <a href="portal.html" class="view-btn">Customer</a>
+                </div>
+                <div class="user-profile" style="cursor: pointer;" onclick="if(confirm('Logout?')) Auth.logout()">
+                    <i class="ri-user-3-fill"></i>
+                    <span id="header-username">Admin User</span>
+                    <i class="ri-logout-box-r-line" style="margin-left: 10px; font-size: 0.9rem; opacity: 0.7;"></i>
+                </div>
+            </div>
+        </header>
+
+        <div class="card table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Customer</th>
+                        <th>Meter Number</th>
+                        <th>Token</th>
+                        <th>Amount (KES)</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="history-table-body">
+                    <!-- Populated by JS -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Receipt Modal Module (Initially Hidden) -->
+        <div id="history-receipt-modal" class="modal-overlay"
+            style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center;">
+            <div class="receipt-card glass-panel"
+                style="width: 100%; max-width: 600px; position: relative; max-height: 90vh; overflow-y: auto; z-index: 1001; background: var(--primary-color); border: 1px solid var(--accent-color); padding: 40px;">
+                <button onclick="document.getElementById('history-receipt-modal').style.display='none'"
+                    style="position: absolute; top: 15px; right: 20px; background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer;">&times;</button>
+
+                <div
+                    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px;">
+                    <div>
+                        <h4 style="color: var(--success-color);"><i class="ri-file-list-3-line"></i> Billing Transcript
+                        </h4>
+                        <span id="m-date" style="font-size: 0.7rem; opacity: 0.5;">DATE: --</span>
+                    </div>
+                    <div style="text-align: right;">
+                        <span id="m-id" style="font-family: monospace; font-size: 0.75rem;">ID: TXN-000000</span>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px;">
+                    <div>
+                        <div class="receipt-line"><span>Account Name</span> <span id="m-name">--</span></div>
+                        <div class="receipt-line"><span>Meter Target</span> <span id="m-meter">--</span></div>
+                        <div class="receipt-line"><span>Energy Units</span> <span id="m-units"
+                                style="color: var(--success-color); font-weight: 700;">-- kWh</span></div>
+                    </div>
+                    <div style="border-left: 1px solid rgba(255,255,255,0.05); padding-left: 20px;">
+                        <div class="receipt-line"><span>Base Value</span> <span id="m-base">--</span></div>
+                        <div class="receipt-line"><span>VAT (16%)</span> <span id="m-vat">--</span></div>
+                        <div class="receipt-line"><span>Fuel Maintenance</span> <span id="m-fuel">--</span></div>
+                        <div class="receipt-line"
+                            style="margin-top: 15px; font-weight: 700; color: #fff; font-size: 1rem;"><span>TOTAL
+                                PAID</span> <span id="m-total">--</span></div>
+                    </div>
+                </div>
+
+                <div class="token-hero" id="m-token" style="font-size: 1.8rem; margin: 30px 0;">---- ---- ---- ----
+                </div>
+
+                <div style="display: flex; gap: 15px; margin-top: 25px;">
+                    <button class="btn"
+                        style="flex: 1; background: rgba(255,255,255,0.05); border: 1px solid var(--border-color);"
+                        onclick="window.print()">
+                        <i class="ri-printer-line"></i> Print
+                    </button>
+                    <button id="btn-resend-email" class="btn" style="flex: 1; background: var(--accent-color);">
+                        <i class="ri-mail-send-line"></i> Resend to Email
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/app.js"></script>
+    <script>
+        // Global variables for modal access
+        let allTransactions = [];
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const tableBody = document.getElementById('history-table-body');
+
+            try {
+                const res = await fetch('http://localhost:3000/api/tokens/vault');
+                allTransactions = await res.json();
+
+                if (allTransactions.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="5" class="empty-state">No past transactions found.</td></tr>';
+                    return;
+                }
+
+                allTransactions.forEach(tx => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${new Date(tx.date).toLocaleDateString()} <span style="font-size:0.8em; opacity:0.7">${new Date(tx.date).toLocaleTimeString()}</span></td>
+                        <td><i class="ri-user-line"></i> ${tx.customerName || 'Guest'}</td>
+                        <td>${tx.meter}</td>
+                        <td style="font-family: 'Courier New', monospace; letter-spacing: 1px;">${tx.token}</td>
+                        <td>KES ${parseInt(tx.amount).toLocaleString()}</td>
+                        <td>
+                            <span class="status-badge" style="margin-right: 5px;">Success</span>
+                            ${tx.notified?.email ? '<i class="ri-mail-check-line" style="color:var(--success-color);" title="Email Sent"></i>' : ''}
+                        </td>
+                        <td>
+                            <button class="token-copy-btn" onclick="openReceipt('${tx.id}')">VIEW</button>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+
+
+            } catch (error) {
+                console.error("Failed to load history", error);
+                tableBody.innerHTML = '<tr><td colspan="5" class="empty-state" style="color:red;">Error loading transactions.</td></tr>';
+            }
+        });
+
+        // Global function called by inline HTML onClick
+        window.openReceipt = window.openReceipt || function (id) {
+            const tx = allTransactions.find(t => t.id === id);
+            if (!tx) return;
+
+            document.getElementById('m-date').textContent = `DATE: ${new Date(tx.date).toLocaleString()}`;
+            document.getElementById('m-id').textContent = `ID: ${tx.id}`;
+            document.getElementById('m-name').textContent = tx.customerName || 'Guest';
+            document.getElementById('m-meter').textContent = tx.meter;
+            document.getElementById('m-units').textContent = `${tx.units} kWh`;
+            document.getElementById('m-base').textContent = `KES ${parseFloat(tx.base).toFixed(2)}`;
+            document.getElementById('m-vat').textContent = `KES ${parseFloat(tx.vat).toFixed(2)}`;
+            document.getElementById('m-fuel').textContent = `KES ${parseFloat(tx.fuel).toFixed(2)}`;
+            document.getElementById('m-total').textContent = `KES ${parseInt(tx.amount).toLocaleString()}`;
+            document.getElementById('m-token').textContent = tx.token;
+
+            const resendBtn = document.getElementById('btn-resend-email');
+            resendBtn.onclick = async () => {
+                resendBtn.innerHTML = 'Sending...';
+                resendBtn.disabled = true;
+                try {
+                    const res = await fetch(`http://localhost:3000/api/tokens/${tx.id}/email`, { method: 'POST' });
+                    const data = await res.json();
+                    if (res.ok) {
+                        alert('Email dispatched successfully!');
+                    } else {
+                        alert('Failed: ' + data.error);
+                    }
+                } catch (e) {
+                    alert('Network error while dispatching email.');
+                }
+                resendBtn.innerHTML = '<i class="ri-mail-send-line"></i> Resend to Email';
+                resendBtn.disabled = false;
+            };
+
+            document.getElementById('history-receipt-modal').style.display = 'flex';
+            document.querySelector('#history-receipt-modal .receipt-card').style.display = 'block';
+        };
+    </script>
+</body>
+
+</html>

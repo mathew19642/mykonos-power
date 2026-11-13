@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mykonos Power | Customer Portal</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body class="customer-view">
+    <nav class="sidebar">
+        <div class="logo">
+            <i class="ri-flashlight-fill" style="color: var(--accent-color);"></i> Mykonos Power
+        </div>
+        <div class="nav-links">
+            <a href="portal.html" class="active"><i class="ri-user-smile-line"></i> My Account</a>
+            <a href="generate.html"><i class="ri-shopping-cart-2-line"></i> Buy Tokens</a>
+            <a href="index.html" class="admin-only"><i class="ri-admin-line"></i> Admin Dashboard</a>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <header>
+            <div>
+                <h1 id="welcome-msg">Dashboard</h1>
+                <p style="color: rgba(255,255,255,0.6);">Mykonos Energy Control Center</p>
+            </div>
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <div class="user-profile">
+                    <i class="ri-user-smile-line"></i>
+                    <span id="header-username">Loading...</span>
+                    <span id="header-balance"
+                        style="margin-left:8px; color:var(--success-color); font-weight:700;"></span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Redesigned Grid v2.0 -->
+        <div id="portal-main-view" style="display: none; grid-template-columns: 1fr 1fr; gap: 25px; margin-bottom: 30px;" class="dash-layout-grid">
+
+            <!-- Column 1: Identity & Wallet -->
+            <div class="glass-panel" style="display: flex; flex-direction: column; gap: 20px;">
+                <div class="digital-id-card"
+                    style="margin-bottom: 0; background: rgba(53, 0, 211, 0.1); border-color: rgba(53, 0, 211, 0.2);">
+                    <div class="id-avatar" style="width: 50px; height: 50px;">
+                        <i class="ri-fingerprint-fill"></i>
+                    </div>
+                    <div>
+                        <h4 id="id-full-name" style="font-size: 0.95rem;">--</h4>
+                        <p id="id-meter-number" style="font-size: 0.75rem; letter-spacing: 1px;">METER: --</p>
+                    </div>
+                </div>
+
+                <div class="wallet-premium-card glass-panel">
+                    <p style="font-size: 0.75rem; opacity: 0.5; text-transform: uppercase;">Available Credits</p>
+                    <div class="balance-v2" id="main-wallet-balance">KES 0</div>
+                    <button class="btn glow-on-hover" onclick="toggleOverlay('topup-overlay')"
+                        style="margin-top: 20px;">
+                        <i class="ri-add-line"></i> Add Funds
+                    </button>
+                    <button class="btn btn-secondary" onclick="toggleOverlay('withdraw-overlay')"
+                        style="margin-top: 10px; background: rgba(255,50,50,0.05); border: 1px solid rgba(255,50,50,0.2); color: #ff5e5e;">
+                        <i class="ri-subtract-line"></i> Withdraw Funds
+                    </button>
+                    <button class="btn btn-secondary" onclick="toggleOverlay('buy-overlay')"
+                        style="margin-top: 10px; background: rgba(255,255,255,0.05); border: 1px solid var(--border-color);">
+                        <i class="ri-flashlight-line"></i> Buy Token
+                    </button>
+                </div>
+
+                <div id="topup-overlay" class="overlay-panel" style="margin-top: 0;">
+                    <h4 style="margin-bottom: 15px;">Deposit KES</h4>
+                    <form id="overlay-topup-form" style="display: flex; flex-direction: column; gap: 10px;">
+                        <input type="number" id="overlay-wallet-amount" class="form-input" placeholder="Amount" min="50"
+                            required>
+                        <button type="submit" class="btn">Confirm Deposit</button>
+                    </form>
+                </div>
+
+                <div id="withdraw-overlay" class="overlay-panel" style="margin-top: 0;">
+                    <h4 style="margin-bottom: 15px; color: #ff5e5e;">Withdraw KES</h4>
+                    <form id="overlay-withdraw-form" style="display: flex; flex-direction: column; gap: 10px;">
+                        <input type="number" id="overlay-withdraw-amount" class="form-input" placeholder="Amount"
+                            min="1" required>
+                        <button type="submit" class="btn" style="background: #ff5e5e;">Confirm Withdrawal</button>
+                    </form>
+                </div>
+
+                <div id="buy-overlay" class="overlay-panel" style="margin-top: 0;">
+                    <h4 style="margin-bottom: 15px;">Purchase Token</h4>
+                    <form id="overlay-buy-form" style="display: flex; flex-direction: column; gap: 10px;">
+                        <input type="number" id="overlay-token-amount" class="form-input" placeholder="KES Amount"
+                            min="100" required>
+                        <button type="submit" class="btn btn-success">Generate Now</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Column 2: Intelligence & History -->
+            <div class="glass-panel" style="display: flex; flex-direction: column; gap: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                    <h3>Energy Intelligence</h3>
+                    <span style="font-size: 0.7rem; color: var(--success-color);">Live Data</span>
+                </div>
+
+                <div style="height: 200px; width: 100%; position: relative;">
+                    <canvas id="usageChart"></canvas>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <h4 style="margin-bottom: 15px; font-size: 0.9rem; opacity: 0.7;">Recent Token Inventory</h4>
+                    <div id="token-list-container">
+                        <!-- Tokens Injected Here -->
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+        <!-- Guest View -->
+        <div id="portal-guest-view" class="card centered-card" style="margin-top: 100px; padding: 60px;">
+            <div
+                style="font-size: 5rem; color: var(--accent-color); margin-bottom: 30px; filter: drop-shadow(0 0 15px var(--accent-color));">
+                <i class="ri-shield-user-line"></i>
+            </div>
+            <h2>Portal Locked</h2>
+            <p style="color: rgba(255,255,255,0.5); margin-bottom: 30px; font-size: 1.1rem;">Secure authentication is
+                required to access meter controls.</p>
+            <a href="login.html" class="btn"
+                style="display: inline-block; width: auto; padding: 15px 50px;">Authenticate Now</a>
+        </div>
+    </main>
+
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/app.js"></script>
+    <script src="assets/js/portal.js"></script>
+    <script>
+        function toggleOverlay(id) {
+            const panels = ['topup-overlay', 'withdraw-overlay', 'buy-overlay'];
+            const target = document.getElementById(id);
+            const isVisible = target.style.display === 'block';
+
+            panels.forEach(p => {
+                const el = document.getElementById(p);
+                if (el) el.style.display = 'none';
+            });
+
+            if (!isVisible) target.style.display = 'block';
+        }
+    </script>
+</body>
+
+</html>
