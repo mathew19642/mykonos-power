@@ -16,12 +16,25 @@ app.use(express.json());
 // Serve static frontend files from current directory
 app.use(express.static(__dirname));
 
-// DB Path
-const DB_PATH = path.join(__dirname, 'data', 'db.json');
+// Route root to index.html explicitly
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+// DB Path (Use /tmp on Vercel because serverless filesystem is read-only)
+const DB_PATH = process.env.VERCEL
+    ? path.join('/tmp', 'db.json')
+    : path.join(__dirname, 'data', 'db.json');
 
 // --- DB Utility Functions ---
 function readDB() {
     try {
+        if (process.env.VERCEL && !fs.existsSync(DB_PATH)) {
+            const seedPath = path.join(__dirname, 'data', 'db.json');
+            if (fs.existsSync(seedPath)) {
+                fs.copyFileSync(seedPath, DB_PATH);
+            }
+        }
         const data = fs.readFileSync(DB_PATH, 'utf8');
         return JSON.parse(data);
     } catch (err) {
@@ -308,6 +321,10 @@ app.post('/api/tokens/:id/email', async (req, res) => {
     }
 });
 
-app.listen(PORT, () => {
-    console.log(`Mykonos API Server running on http://localhost:${PORT}`);
-});
+if (!process.env.VERCEL) {
+    app.listen(PORT, () => {
+        console.log(`Mykonos API Server running on http://localhost:${PORT}`);
+    });
+}
+
+module.exports = app;
