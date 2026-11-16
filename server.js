@@ -13,12 +13,24 @@ const resend = new Resend(process.env.RESEND_API_KEY || 're_123'); // Fallback t
 app.use(cors());
 app.use(express.json());
 
-// Serve static frontend files from current directory
+// Serve static frontend assets
+app.use('/assets', express.static(path.join(__dirname, 'assets')));
 app.use(express.static(__dirname));
 
 // Route root to index.html explicitly
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+// Dynamic route to serve any HTML page (e.g., /portal.html, /login.html, /portal, /login)
+app.get('/:page', (req, res, next) => {
+    if (req.params.page.startsWith('api')) return next();
+    const pageName = req.params.page.replace(/\.html$/i, '');
+    const htmlFile = path.join(__dirname, `${pageName}.html`);
+    if (fs.existsSync(htmlFile)) {
+        return res.sendFile(htmlFile);
+    }
+    next();
 });
 
 // DB Path (Use /tmp on Vercel because serverless filesystem is read-only)
