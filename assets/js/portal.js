@@ -208,7 +208,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const res = await fetch('/api/tokens/generate', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ meter: user.meter, amount, notifySms: false, notifyEmail: false }) // self-buy notifications
+                body: JSON.stringify({ meter: user.meter, amount, notifySms: false, notifyEmail: false, customerName: user.name }) // self-buy notifications
             });
             const data = await res.json();
 

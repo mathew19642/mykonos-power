@@ -160,17 +160,30 @@ app.get('/api/users', (req, res) => {
 
 // Update Wallet Balance
 app.post('/api/users/:meter/balance', (req, res) => {
-    const { amount } = req.body;
+    const { amount, user } = req.body;
     const db = readDB();
-    const userIndex = db.users.findIndex(u => u.meter === req.params.meter);
+    let userIndex = db.users.findIndex(u => u.meter === req.params.meter);
 
-    if (userIndex !== -1) {
-        db.users[userIndex].walletBalance = (db.users[userIndex].walletBalance || 0) + parseInt(amount);
+    if (userIndex === -1) {
+        // Self-heal: If user is missing from DB (e.g. serverless cold start / redeploy), auto-restore user
+        const restoredUser = {
+            id: user?.id || Date.now(),
+            name: user?.name || "Customer",
+            email: user?.email || "",
+            meter: req.params.meter,
+            password: user?.password || "customer123",
+            role: user?.role || 'customer',
+            walletBalance: Math.max(0, parseInt(amount) || 0),
+            registrationDate: new Date().toISOString()
+        };
+        db.users.push(restoredUser);
         writeDB(db);
-        res.json({ success: true, newBalance: db.users[userIndex].walletBalance });
-    } else {
-        res.status(404).json({ error: "User not found" });
+        return res.json({ success: true, newBalance: restoredUser.walletBalance });
     }
+
+    db.users[userIndex].walletBalance = Math.max(0, (db.users[userIndex].walletBalance || 0) + parseInt(amount));
+    writeDB(db);
+    res.json({ success: true, newBalance: db.users[userIndex].walletBalance });
 });
 
 
@@ -223,7 +236,7 @@ app.post('/api/tokens/generate', async (req, res) => {
         base: base,
         vat: vat,
         fuel: fuel,
-        customerName: customer ? customer.name : 'Unregistered Meter',
+        customerName: customer ? customer.name : (req.body.customerName || 'Customer'),
         notified: { sms: notifySms, email: notifyEmail }
     };
 

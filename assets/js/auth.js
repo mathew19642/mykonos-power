@@ -45,7 +45,7 @@ const Auth = {
             const res = await fetch(`/api/users/${currentUser.meter}/balance`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ amount })
+                body: JSON.stringify({ amount, user: currentUser })
             });
 
             const data = await res.json();
