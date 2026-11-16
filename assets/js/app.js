@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const totalRevenueEl = document.getElementById('total-revenue');
     if (totalRevenueEl) {
         // Fetch from API instead of localStorage
-        fetch('http://localhost:3000/api/tokens/vault')
+        fetch('/api/tokens/vault')
             .then(res => res.json())
             .then(transactions => {
                 const total = transactions.reduce((sum, tx) => sum + parseInt(tx.amount), 0);

@@ -134,7 +134,7 @@
             const tableBody = document.getElementById('history-table-body');
 
             try {
-                const res = await fetch('http://localhost:3000/api/tokens/vault');
+                const res = await fetch('/api/tokens/vault');
                 allTransactions = await res.json();
 
                 if (allTransactions.length === 0) {
@@ -189,7 +189,7 @@
                 resendBtn.innerHTML = 'Sending...';
                 resendBtn.disabled = true;
                 try {
-                    const res = await fetch(`http://localhost:3000/api/tokens/${tx.id}/email`, { method: 'POST' });
+                    const res = await fetch(`/api/tokens/${tx.id}/email`, { method: 'POST' });
                     const data = await res.json();
                     if (res.ok) {
                         alert('Email dispatched successfully!');

@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function renderTokens(meter) {
         try {
-            const res = await fetch('http://localhost:3000/api/tokens/vault');
+            const res = await fetch('/api/tokens/vault');
             const txs = await res.json();
             const myTxs = txs.filter(t => t.meter === meter).slice(0, 4);
 
@@ -205,7 +205,7 @@ document.addEventListener('DOMContentLoaded', () => {
         await Auth.updateBalance(-amount);
 
         try {
-            const res = await fetch('http://localhost:3000/api/tokens/generate', {
+            const res = await fetch('/api/tokens/generate', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ meter: user.meter, amount, notifySms: false, notifyEmail: false }) // self-buy notifications

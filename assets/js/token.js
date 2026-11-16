@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     clearInterval(logInterval);
 
                     try {
-                        const res = await fetch('http://localhost:3000/api/tokens/generate', {
+                        const res = await fetch('/api/tokens/generate', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ meter, amount, notifySms, notifyEmail })
@@ -108,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!vaultList) return;
         
         try {
-            const res = await fetch('http://localhost:3000/api/tokens/vault');
+            const res = await fetch('/api/tokens/vault');
             const txs = await res.json();
             
             vaultList.innerHTML = '';
@@ -161,7 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Global exposed functions for inline calls
     window.openPastReceipt = async (tid) => {
         try {
-            const res = await fetch('http://localhost:3000/api/tokens/vault');
+            const res = await fetch('/api/tokens/vault');
             const txs = await res.json();
             const tx = txs.find(t => t.id === tid);
             if (tx) showReceipt(tx);
@@ -171,7 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.deleteReceipt = async (tid) => {
         if (!confirm('VANISH DATA? This record will be permanently cleared from the server.')) return;
         try {
-             await fetch(`http://localhost:3000/api/tokens/${tid}`, { method: 'DELETE' });
+             await fetch(`/api/tokens/${tid}`, { method: 'DELETE' });
              renderVault();
              document.getElementById('receipt-module').style.display = 'none';
              document.getElementById('tech-console').style.display = 'none';

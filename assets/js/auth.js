@@ -1,7 +1,7 @@
 const Auth = {
     register: async (name, email, password) => {
         try {
-            const res = await fetch('http://localhost:3000/api/auth/register', {
+            const res = await fetch('/api/auth/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name, email, password })
@@ -18,7 +18,7 @@ const Auth = {
         const ident = identifier.trim();
 
         try {
-            const res = await fetch('http://localhost:3000/api/auth/login', {
+            const res = await fetch('/api/auth/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ identifier: ident, password })
@@ -42,7 +42,7 @@ const Auth = {
         if (!currentUser) return false;
 
         try {
-            const res = await fetch(`http://localhost:3000/api/users/${currentUser.meter}/balance`, {
+            const res = await fetch(`/api/users/${currentUser.meter}/balance`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ amount })
@@ -85,7 +85,7 @@ const Auth = {
         if (!sessionUser) return null;
 
         try {
-            const res = await fetch(`http://localhost:3000/api/users/${sessionUser.meter}`);
+            const res = await fetch(`/api/users/${sessionUser.meter}`);
             if (res.ok) {
                 const freshUser = await res.json();
                 localStorage.setItem('mykonos_current_user', JSON.stringify(freshUser));
@@ -99,7 +99,7 @@ const Auth = {
 
     getAllUsers: async () => {
         try {
-            const res = await fetch('http://localhost:3000/api/users');
+            const res = await fetch('/api/users');
             return await res.json();
         } catch (e) {
             console.error(e);
